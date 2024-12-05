@@ -17,3 +17,8 @@
 1. Прописать .venv\Scripts\activate
 2. Прописать python main.py
 3. Бот работает
+
+
+
+Чтобы выкл. бота:
+ctrl + C
