@@ -126,7 +126,7 @@ opt_product_commands = InlineKeyboardMarkup(inline_keyboard=[
 
 async def main_reply(user_id):
 
-    employee = await employee_requests.getEmployeeByUserId(user_id)
+    employee = await employee_requests.getEmployeeByUserUserId(user_id)
 
     if not employee:
         return None
@@ -192,7 +192,7 @@ async def redact_order_inline(is_payment: bool = True, data: str = 'redact_order
 button_per_page = 10
 async def orders_inline(page_num: int, user_id = None):
 
-    employee = await employee_requests.getEmployeeByUserId(user_id)
+    employee = await employee_requests.getEmployeeByUserUserId(user_id)
     
 
     orders = []

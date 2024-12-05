@@ -3,7 +3,7 @@ from db import employee_requests, order_requests, product_requests
 
 
 async def clearEmployeeDB(user_id):
-  employee = await employee_requests.getEmployeeByUserId(user_id)
+  employee = await employee_requests.getEmployeeByUserUserId(user_id)
   print(employee)
   if not employee:
      return

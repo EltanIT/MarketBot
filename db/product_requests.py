@@ -96,7 +96,7 @@ async def deleteProductById(product_id: int):
     
     
 
-async def createProduct(name: str, description: str, price: float, image: str, video: str, optionally: list['OptionallyProduct'], is_individual: bool = False) -> Product:
+async def createProduct(name: str, description: str, price: str, image: str, video: str, optionally: list['OptionallyProduct'], is_individual: bool = False) -> Product:
     async with async_session() as session:
 
         product = await getProductByName(name.lower())

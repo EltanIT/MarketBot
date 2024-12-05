@@ -41,9 +41,9 @@ async def getActiveOrderByUserId(id) -> Optional[Order]:
     
 
 
-async def findOrderByFio(fio: str) -> Optional[Order]:
+async def findOrderByFio(text: str) -> Optional[Order]:
     async with async_session() as session:
-        order = await session.scalar(select(Order).filter(Order.fio.contains(fio)))
+        order = await session.scalar(select(Order).filter(Order.fio.lower().contains(text.lower())))
         return order
     
 

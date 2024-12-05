@@ -64,7 +64,7 @@ async def product(callback: types.CallbackQuery, state: FSMContext):
 
       short_des = (
           f'{product.name}\n' +
-          f'Цена: <strong>{product.price}₽</strong>\n\n'
+          f'Цена: <strong>{product.price}</strong>\n\n'
       )
 
       await state.update_data(product_id = product.id)
@@ -133,7 +133,11 @@ async def before_ordering(callback: types.CallbackQuery, state: FSMContext):
       return
     
     
-    short_des = data['short_des']
+    short_des = (
+          f'{product.name}\n' +
+          f'Цена: <strong>{product.price}</strong>\n\n'
+    )
+    await state.update_data(short_des = short_des)
 
     command = callback.data.split('_')[2]
 
@@ -141,10 +145,6 @@ async def before_ordering(callback: types.CallbackQuery, state: FSMContext):
     if command == 'back':
       await state.set_state(SelectProduct.AboutProduct)
 
-      short_des = (
-          f'{product.name}\n' +
-          f'Цена: {product.price}₽\n\n'
-      )
       await state.update_data(product_id = product.id)
 
       await callback.message.delete()
@@ -188,7 +188,6 @@ async def optionally(callback: types.CallbackQuery, state: FSMContext):
 
     data = await state.get_data()
 
-    product = await product_requests.getProductById(data['product_id'])
     short_des = data['short_des']
 
     command = callback.data.split('_')[1]
@@ -212,9 +211,11 @@ async def optionally(callback: types.CallbackQuery, state: FSMContext):
     if not optionally_product:
       return
       
-    await callback.message.edit_text(f'{optionally_product.name}\n' +
-                                         f'{optionally_product.description}',
-                            reply_markup = kb.optionally_product_buy)
+    await callback.message.edit_text(
+       f'{optionally_product.name}\n' +
+       f'Цена: {optionally_product.price}\n\n' +
+       f'Описание:\n{optionally_product.description}',
+       reply_markup = kb.optionally_product_buy)
 
 
 @router.callback_query(SelectProduct.OptionallyProduct, F.data.startswith('selected_optionally'))
@@ -319,7 +320,6 @@ async def individual_product(message: types.Message, state: FSMContext):
 
 
     
-
 
 async def about_product_msg(product, message: types.Message, short_des: str) -> list[types.Message]:
     media_group = []

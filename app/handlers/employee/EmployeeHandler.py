@@ -33,7 +33,7 @@ async def help(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     command = callback.data.split('_')[1]
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     if employee:
       client = await user_requests.getUserById(employee.active_client_id)
       if command == 'yes':
@@ -68,7 +68,7 @@ async def help(callback: types.CallbackQuery, state: FSMContext):
 @router.message(F.text == 'Принимать заявки')
 async def redact_busy(message: types.Message, state: FSMContext):
 
-   employee = await employee_requests.getEmployeeByUserId(message.from_user.id)
+   employee = await employee_requests.getEmployeeByUserUserId(message.from_user.id)
    if not employee:
       return
    
@@ -80,7 +80,7 @@ async def redact_busy(message: types.Message, state: FSMContext):
 @router.message(F.text == 'Не принимать заявки')
 async def redact_busy(message: types.Message, state: FSMContext):
 
-   employee = await employee_requests.getEmployeeByUserId(message.from_user.id)
+   employee = await employee_requests.getEmployeeByUserUserId(message.from_user.id)
    if not employee:
       return
    
@@ -99,7 +99,7 @@ async def redact_busy(message: types.Message, state: FSMContext):
 @router.message(F.text == 'Закончить разговор ❌')
 async def end_call_hdl(message: types.Message, state: FSMContext):
   await state.clear()
-  employee = await employee_requests.getEmployeeByUserId(message.from_user.id)
+  employee = await employee_requests.getEmployeeByUserUserId(message.from_user.id)
   client = await user_requests.getUserById(employee.active_client_id)
   await clearEmployeeDB(message.from_user.id)
 
@@ -146,7 +146,7 @@ async def start_work(callback: types.CallbackQuery, state: FSMContext):
     await state.clear()
 
     command = callback.data.split('_')[1]
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     if employee:
       await callback.message.delete()
       if command == 'yes':

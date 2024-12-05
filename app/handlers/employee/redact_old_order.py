@@ -432,7 +432,7 @@ async def redact_individual_product(message: types.Message, state: FSMContext):
     product = await product_requests.createProduct(
        name = message_text,
        description = '',
-       price = 0,
+       price = '0₽',
        image = None,
        video = None,
        optionally = [],
@@ -569,7 +569,7 @@ async def redact_order_ProductId(message: types.Message, state: FSMContext):
     
 
     await order_requests.updateOrderProductId(order.id, product.id)
-    await order_requests.updateOrderProductPrice(order.id, product.price)
+    await order_requests.updateOrderProductPrice(order.id, 0)
     await order_requests.updateOrderProductCount(order.id, 1)
 
     message_id = data['order_msg']
@@ -621,7 +621,7 @@ async def redact_order_ProductId(callback: types.CallbackQuery, state: FSMContex
        return
    
     await order_requests.updateOrderProductId(order.id, product.id)
-    await order_requests.updateOrderProductPrice(order.id, product.price)
+    await order_requests.updateOrderProductPrice(order.id, 0)
     await order_requests.updateOrderProductCount(order.id, 1)
 
     order = await order_requests.getOrderById(order.id)
@@ -791,7 +791,7 @@ async def redact_order_OptProductId(message: types.Message, state: FSMContext):
        return
     
     await order_requests.updateOrderOptProductId(order.id, product.id)
-    await order_requests.updateOrderOptProductPrice(order.id, product.price)
+    await order_requests.updateOrderOptProductPrice(order.id, 0)
     await order_requests.updateOrderOptProductCount(order.id, 1)
     
     message_id = data['order_msg']
@@ -841,7 +841,7 @@ async def redact_order_OptProductId(callback: types.CallbackQuery, state: FSMCon
     
     product = await optionally_product_requests.getOptionallyProductById(int(command))
     await order_requests.updateOrderOptProductId(order.id, product.id)
-    await order_requests.updateOrderOptProductPrice(order.id, product.price)
+    await order_requests.updateOrderOptProductPrice(order.id, 0)
     await order_requests.updateOrderOptProductCount(order.id, 1)
 
     message_id = data['order_msg']

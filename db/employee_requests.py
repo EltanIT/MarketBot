@@ -31,7 +31,7 @@ async def getEmployeeById(id: int) -> Optional[Employee]:
         return employee
     
 
-async def getEmployeeByUserId(id: int) -> Optional[Employee]:
+async def getEmployeeByUserUserId(id: int) -> Optional[Employee]:
     async with async_session() as session:
         user = await user_requests.getUserByUserId(id)
         if not user:
@@ -40,13 +40,13 @@ async def getEmployeeByUserId(id: int) -> Optional[Employee]:
         employee = await session.scalar(select(Employee).where(Employee.user_id == user.id))
         
         return employee
-    
 
-async def getEmployeeByUserIdId(id: int) -> Optional[Employee]:
+async def getEmployeeByUserId(id: int) -> Optional[Employee]:
     async with async_session() as session:
         employee = await session.scalar(select(Employee).where(Employee.user_id == id))
         
         return employee
+
 
 async def getEmployeeWithActiveClientByClientId(id: int) -> Optional[Employee]:
     async with async_session() as session:
@@ -91,7 +91,7 @@ async def deleteEmployee(id):
 
 async def createEmployee(user_id: int, username: str):
     async with async_session() as session:
-        employee = await getEmployeeByUserIdId(user_id)
+        employee = await getEmployeeByUserId(user_id)
 
         if not employee:
             session.add(Employee(

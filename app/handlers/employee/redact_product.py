@@ -45,14 +45,12 @@ async def product_category(callback: types.CallbackQuery, state: FSMContext):
       )
     elif command == 'addProduct':
        
-       await callback.message.reply('Подождите, товар создается...')
-       
        product1 = await product_requests.getProductById(1)
 
        product = await product_requests.createProduct(
           name = '-',
           description = '',
-          price = 0,
+          price = '0₽',
           image = product1.image,
           video = product1.video,
           optionally = [],
@@ -64,11 +62,6 @@ async def product_category(callback: types.CallbackQuery, state: FSMContext):
 
        await callback.message.delete()
        messages = await sendProductMedia(product, callback.message)
-
-       await bot.delete_message(
-          callback.message.chat.id,
-          callback.message.message_id+1
-       )
        
        product_msg = messages[-1]
 
@@ -244,7 +237,7 @@ async def product_commands(callback: types.CallbackQuery, state: FSMContext):
 
       await state.set_state(RedactProduct.ProductPrice)
 
-      await callback.message.edit_text('Введите точную цену товара', reply_markup = await kb.back_inline('redact_product'))
+      await callback.message.edit_text('Введите цену товара', reply_markup = await kb.back_inline('redact_product'))
     elif command == 'description':
 
       await state.set_state(RedactProduct.ProductDes)
@@ -335,7 +328,7 @@ async def optionally_commands(callback: types.CallbackQuery, state: FSMContext):
 
       await state.set_state(RedactProduct.OptProductPrice)
 
-      await callback.message.edit_text('Введите точную цену доп. товара', reply_markup = await kb.back_inline('redact_optionally'))
+      await callback.message.edit_text('Введите цену доп. товара', reply_markup = await kb.back_inline('redact_optionally'))
     elif command == 'description':
 
       await state.set_state(RedactProduct.OptProductDes)
@@ -408,20 +401,6 @@ async def redact_productPrice(message: types.Message, state: FSMContext):
    
     data = await state.get_data()
     main_msg = data['main_msg']
-
-    try:
-       float(message.text)
-    except ValueError:
-        await message.delete()
-        await bot.edit_message_text(
-            chat_id = message.chat.id,
-            message_id = main_msg,
-            text = 'Неверный формат ответа, можно вводить только целочисленные и с плавающей точкой числа',
-            reply_markup = await kb.cancel_inline('redact_product')
-        )
-        return
-    
-    
     
     product = data['product']
     if not product:
@@ -700,20 +679,6 @@ async def redact_opt_productPrice(message: types.Message, state: FSMContext):
    
     data = await state.get_data()
     main_msg = data['main_msg']
-
-    try:
-       float(message.text)
-    except ValueError:
-        await message.delete()
-        await bot.edit_message_text(
-            chat_id = message.chat.id,
-            message_id = main_msg,
-            text = 'Неверный формат ответа, можно вводить только целочисленные и с плавающей точкой числа',
-            reply_markup = await kb.cancel_inline('redact_optProduct')
-        )
-        return
-    
-    
     
     product = data['product']
     if not product:
@@ -819,8 +784,8 @@ async def aboutProductText(product: Product) -> str:
 
    product_text = (
           f'<strong>Товар</strong>: {product.id}, {product.name}\n' +
-          f'Цена: {product.price}₽\n\n' +
-          f'Описание: {product.description}\n\n'
+          f'<strong>Цена</strong>: {product.price}\n\n' +
+          f'<strong>Описание</strong>:\n{product.description}\n\n'
        )
        
 
@@ -833,7 +798,7 @@ async def aboutProductText(product: Product) -> str:
 
    return (
        product_text +
-       'Доп. товары:\n\n' +
+       '<strong>Доп. товары</strong>:\n\n' +
        optionally_product_text
    )
 
@@ -843,7 +808,7 @@ async def aboutOptionallyText(product: OptionallyProduct) -> str:
 
    return (
           f'<strong>Товар</strong>: {product.id}, {product.name}\n' +
-          f'Цена: {product.price}₽\n\n' +
-          f'Описание: {product.description}'
+          f'<strong>Цена</strong>: {product.price}₽\n\n' +
+          f'<strong>Описание</strong>:\n{product.description}'
        )
    

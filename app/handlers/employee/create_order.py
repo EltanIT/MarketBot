@@ -37,7 +37,7 @@ async def cancel_redact_individual(callback: types.CallbackQuery, state: FSMCont
 @router.callback_query(F.data == 'create_order')
 async def create_new_order(callback: types.CallbackQuery, state: FSMContext):
 
-   employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+   employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
    if not employee:
       return
    
@@ -54,7 +54,7 @@ async def create_new_order(callback: types.CallbackQuery, state: FSMContext):
       delivery_method=DeliveryMethod.PICKUP,
 
       product_price=0,
-      opt_product_price=0.0,
+      opt_product_price=0,
 
       product_id=0,
       optionally_product_id=0,
@@ -97,7 +97,7 @@ async def create_new_order(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(StateFilter(CreateOrderFromHelp), F.data.startswith('redact_order'))
 async def redact_order(callback: types.CallbackQuery, state: FSMContext):
     
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     command = callback.data.split('_')[2]
 
 
@@ -174,7 +174,7 @@ async def redact_order(callback: types.CallbackQuery, state: FSMContext):
 @router.callback_query(CreateOrderFromHelp.Payment, F.data.startswith('payment_order'))
 async def order_payment(callback: types.CallbackQuery, state: FSMContext):
 
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     command = callback.data.split('_')[2]
 
     data = await state.get_data()
@@ -284,7 +284,7 @@ async def redact_order_endedAt(message: types.Message, state: FSMContext):
 @router.callback_query(StateFilter(CreateOrderFromHelp), F.data.startswith('redact_product'))
 async def redact_product(callback: types.CallbackQuery, state: FSMContext):
 
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     command = callback.data.split('_')[2]
 
 
@@ -301,7 +301,7 @@ async def redact_product(callback: types.CallbackQuery, state: FSMContext):
 
       await state.set_state(CreateOrderFromHelp.ProductPrice)
 
-      await callback.message.edit_text('Введите точную цену товара', reply_markup = await kb.cancel_inline('redact_product'))
+      await callback.message.edit_text('Введите цену товара', reply_markup = await kb.cancel_inline('redact_product'))
     elif command == 'count':
 
       await state.set_state(CreateOrderFromHelp.ProductCount)
@@ -319,7 +319,7 @@ async def redact_product(callback: types.CallbackQuery, state: FSMContext):
 async def redact_opt_product(callback: types.CallbackQuery, state: FSMContext):
     
 
-    employee = await employee_requests.getEmployeeByUserId(callback.from_user.id)
+    employee = await employee_requests.getEmployeeByUserUserId(callback.from_user.id)
     command = callback.data.split('_')[2]
 
     if not employee:
@@ -340,12 +340,12 @@ async def redact_opt_product(callback: types.CallbackQuery, state: FSMContext):
 
       await state.set_state(CreateOrderFromHelp.OptionallyProductPrice)
 
-      await callback.message.edit_text('Введите точную цену товара', reply_markup = await kb.cancel_inline('redact_optProduct'))
+      await callback.message.edit_text('Введите цену доп. товара', reply_markup = await kb.cancel_inline('redact_optProduct'))
     elif command == 'count':
 
       await state.set_state(CreateOrderFromHelp.OptionallyProductCount)
 
-      await callback.message.edit_text('Введите количество товара', reply_markup = await kb.cancel_inline('redact_optProduct'))
+      await callback.message.edit_text('Введите количество доп. товара', reply_markup = await kb.cancel_inline('redact_optProduct'))
     elif command == 'delete':
        
        data = await state.get_data()
@@ -397,7 +397,7 @@ async def redact_individual_product(message: types.Message, state: FSMContext):
     product = await product_requests.createProduct(
        name = message_text,
        description = '',
-       price = 0,
+       price = '0₽',
        image = None,
        video = None,
        optionally = [],
@@ -475,7 +475,7 @@ async def redact_order_ProductId(message: types.Message, state: FSMContext):
     order = data['order']
     
     await order_requests.updateOrderProductId(order.id, product.id)
-    await order_requests.updateOrderProductPrice(order.id, product.price)
+    await order_requests.updateOrderProductPrice(order.id, 0)
     await order_requests.updateOrderProductCount(order.id, 1)
 
     await state.set_state(CreateOrderFromHelp.Call)
@@ -521,7 +521,7 @@ async def redact_order_ProductId(callback: types.CallbackQuery, state: FSMContex
     
     product = await product_requests.getProductById(int(command))
     await order_requests.updateOrderProductId(order.id, product.id)
-    await order_requests.updateOrderProductPrice(order.id, product.price)
+    await order_requests.updateOrderProductPrice(order.id, 0)
     await order_requests.updateOrderProductCount(order.id, 1)
 
     await state.set_state(CreateOrderFromHelp.Call)
@@ -551,7 +551,7 @@ async def redact_order_ProductPrice(message: types.Message, state: FSMContext):
 
     data = await state.get_data()
     main_msg = data['main_msg']
-    
+
     try:
        float(message.text)
     except ValueError:
@@ -682,7 +682,7 @@ async def redact_order_OptProductId(message: types.Message, state: FSMContext):
     
 
     await order_requests.updateOrderOptProductId(order.id, product.id)
-    await order_requests.updateOrderOptProductPrice(order.id, product.price)
+    await order_requests.updateOrderOptProductPrice(order.id, 0)
     await order_requests.updateOrderOptProductCount(order.id, 1)
 
     await state.set_state(CreateOrderFromHelp.Call)
@@ -729,7 +729,7 @@ async def redact_order_OptProductId(callback: types.CallbackQuery, state: FSMCon
     
     product = await optionally_product_requests.getOptionallyProductById(int(command))
     await order_requests.updateOrderOptProductId(order.id, product.id)
-    await order_requests.updateOrderOptProductPrice(order.id, product.price)
+    await order_requests.updateOrderOptProductPrice(order.id, 0)
     await order_requests.updateOrderOptProductCount(order.id, 1)
 
 
@@ -758,7 +758,7 @@ async def redact_order_OptProductPrice(message: types.Message, state: FSMContext
 
     data = await state.get_data()
     main_msg = data['main_msg']
-    
+
     try:
        float(message.text)
     except ValueError:
@@ -770,7 +770,6 @@ async def redact_order_OptProductPrice(message: types.Message, state: FSMContext
             reply_markup = await kb.cancel_inline('redact_optProduct')
         )
         return
-    
     
     data = await state.get_data()
     order = data['order']

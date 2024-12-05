@@ -167,8 +167,10 @@ async def start_cmd(message: types.Message, state: FSMContext):
 
     await state.set_state(SelectProduct.Product)
 
-    await message.answer('Приветсвую! Я бот-консультант магазина " ",\n' + 
-                         'я помогу выбрать нужный товар и оформить заказ.',
+    await message.answer('Приветствую!\n'+
+                         'Я робот консультант магазина "Чкаловские Беркуты"🦅.' +
+                         'Помогу выбрать Вам нужный товар и оформить заказ.😋\n\n' +
+                         'тех.поддержка: @failxz',
                            reply_markup = kb.main_reply)
     await message.answer('Выберите товар:',
                          reply_markup = await products_inline(isBack = False))

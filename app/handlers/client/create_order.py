@@ -58,9 +58,12 @@ async def product_count(message: types.Message, state: FSMContext):
 
     count = message.text
 
-    if not int(count):
+    try:
+       int(count)
+    except ValueError:
        await message.answer('Неверный формат сообщения, вводить можно только числа')
        return
+
     
     await state.update_data(product_count = int(count))
     data = await state.get_data()
@@ -89,7 +92,9 @@ async def optionally_product_count(message: types.Message, state: FSMContext):
 
     count = message.text
 
-    if not int(count):
+    try:
+       int(count)
+    except ValueError:
        await message.answer('Неверный формат сообщения, вводить можно только числа')
        return
     
@@ -305,14 +310,12 @@ async def purchasing(
         product_count = data['product_count']
 
         optionally_product_id = None
-        optionally_product_price = 0
         optionally_product_count = 0
 
         try:
             optionally_product_id = data['optionally_product_id']
             optionally_product = await optionally_product_requests.getOptionallyProductById(optionally_product_id)
             if optionally_product:
-              optionally_product_price = optionally_product.price
               optionally_product_count = data['optionally_product_count']
         except KeyError:
             optionally_product_id = None
@@ -328,8 +331,8 @@ async def purchasing(
            address,
            delivery,
 
-           product.price,
-           optionally_product_price,
+           0,
+           0,
 
            product.id,
            optionally_product_id,

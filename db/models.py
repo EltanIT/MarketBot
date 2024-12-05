@@ -87,7 +87,7 @@ class Product(Base):
     id: Mapped[int] = mapped_column(primary_key = True)
     name = mapped_column(String)
     description = mapped_column(String)
-    price = mapped_column(Float)
+    price = mapped_column(String)
     image = mapped_column(String)
     video = mapped_column(String)
     is_individual = mapped_column(Boolean, default = False)
@@ -100,7 +100,7 @@ class OptionallyProduct(Base):
     id: Mapped[int] = mapped_column(primary_key = True)
     name = mapped_column(String)
     description = mapped_column(String)
-    price = mapped_column(Float)
+    price = mapped_column(String)
     media = mapped_column(String)
     products: Mapped[list["Product"]] = relationship(secondary = ProductOptionallyProduct, back_populates='optionally')
 
@@ -119,16 +119,14 @@ class OptionallyProduct(Base):
 async def async_main():
     async with engine.begin() as conn:
 
-        isTrue = False
-        if os.path.exists('db/db.sqlite3'):
-            isTrue = True
-
         await conn.run_sync(Base.metadata.create_all)
 
-        if isTrue:
-            await create_default_db()
+        # await create_default_db()
 
 
+        # Если нужно добавить нового сотрудника, то добавьте новый метод с id и username пользователя, а после перезапустите бота
+        await addEmployee(6725589384, '@minigunbro')
+        await addEmployee(6392239816, '@agregat_nicola')
         
         # Админов нет, есть только сотрудники
         # admins = await user_requests.getAllAdminsIds()
@@ -145,25 +143,23 @@ async def async_main():
 
 from db import product_requests, optionally_product_requests, user_requests, employee_requests
 async def create_default_db():
-
-
     await optionally_product_requests.createOptionallyProduct(
         'Выносные антенны радиоуправления',
         'Здесь будет описание товара',
-        2500.0,
+        '2500.0₽',
         ['https://avatars.mds.yandex.net/i?id=f51a6635fc9f4b0ed4a5a6ffe057ea6d6ac220e4-6844425-images-thumbs&n=13']
     )
     await optionally_product_requests.createOptionallyProduct(
         'Аппаратура управления',
         'Здесь будет описание товара',
-        1499.99,
+        '1499.99₽',
         ['https://avatars.mds.yandex.net/i?id=f51a6635fc9f4b0ed4a5a6ffe057ea6d6ac220e4-6844425-images-thumbs&n=13']
     )
 
     await optionally_product_requests.createOptionallyProduct(
         'Средства визуального контроля',
         'Здесь будет описание товара',
-        13990.0,
+        '13990.0₽',
         ['https://avatars.mds.yandex.net/i?id=f51a6635fc9f4b0ed4a5a6ffe057ea6d6ac220e4-6844425-images-thumbs&n=13']
     )
     
@@ -173,10 +169,17 @@ async def create_default_db():
     op3 = await optionally_product_requests.getOptionallyProductById(3)
 
     await product_requests.createProduct(
-        "FPV дрон «Стужа»",
-        description="Дронтянин еееее",
-        price=18600.0,
-        image = 'AgACAgIAAxkBAAIdJWdO-4-6830glJF8CyNul2UuAUZpAAKc7DEbjdl5Spy4G0aPyligAQADAgADeQADNgQ',
+        "FPV дрон «Стужа»🚁",
+        description='7-ми дюймовый дрон из текстолита.\n' +
+                    'Масса дрона с АКБ - 1,6кг\n' +
+                    'Максимальная скорость - 200 км/ч\n' +
+                    'Грузоподъёмность - 2,5 кг\n' +
+                    'Частота видеосигнала - 5.8 GHz\n' +
+                    'Управление - ELRS\n\n' +
+
+                    '*точную цену озвучит сотрудник, который свяжется с вами после заказа',
+        price = '50000.0₽',
+        image = 'AgACAgIAAxkBAAIe32dQaNHYJm3Y_Apmr8282StTt69fAALp5zEbgGSASlOrucrwMecvAQADAgADeQADNgQ',
         video =  'BAACAgIAAxkBAAIdIWdO-uidzB0MSfjorHclb7eJJqs4AAInYgACjdl5SuO-CCEJIeP7NgQ',
         optionally=[
             op1
@@ -184,8 +187,9 @@ async def create_default_db():
     )
     await product_requests.createProduct(
         "Гусеничная платформа «Прометей»",
-        description="1. Очень крутой 2. Быстрый",
-        price=52200.0,
+        description="1. Очень крутой 2. Быстрый\n\n" +
+                    '*точную цену озвучит сотрудник, который свяжется с вами после заказа',
+        price='52200.0₽',
         image = 'AgACAgIAAxkBAAIdJGdO-3eG5NWK3XZJwhE9K4CIoPyQAAKb7DEbjdl5Shr0WEmq5bRxAQADAgADeQADNgQ',
         video =  'BAACAgIAAxkBAAIdImdO-0BDJFjddVXPCx92ztW2CZSaAAIsYgACjdl5StDb747ZBPCdNgQ',
         optionally=[
@@ -193,9 +197,9 @@ async def create_default_db():
         ]
     )
     await product_requests.createProduct(
-        "Средство РЭБ «Радионянь»",
+        'Прибор РЭБ "Радио Нянь"',
         description="Мега крутое средство",
-        price=23242.99,
+        price='23242.99₽',
         image = 'AgACAgIAAxkBAAIcvGdO7ko8IETUGBybE9WQHlIuJqprAAJI7DEbjdl5SqYc5lYxzocRAQADAgADeQADNgQ',
         video =  'BAACAgIAAxkBAAIdI2dO-1u5z1x7QDSUYFO422FhuQSmAAIuYgACjdl5SsQK61pvn8qMNgQ',
         optionally=[
@@ -203,12 +207,7 @@ async def create_default_db():
         ]
     )
 
-
-    await addEmployee(6725589384, '@minigunbro')
-    await addEmployee(6392239816, '@agregat_nicola')
-
-    await user_requests.createUser(1464474322, '@geor_i', UserRole.ADMIN)
-
+    # await user_requests.createUser(1464474322, '@geor_i', UserRole.ADMIN)
 
 
 

@@ -20,7 +20,7 @@ async def getAllOptionallyProducts() -> list['OptionallyProduct']:
         return optionallyProducts.all()
     
 
-async def createOptionallyProduct(name: str, description: str, price: float, media: list['str']) -> OptionallyProduct:
+async def createOptionallyProduct(name: str, description: str, price: str, media: list['str']) -> OptionallyProduct:
     async with async_session() as session:
         product = OptionallyProduct(
             name=name,
