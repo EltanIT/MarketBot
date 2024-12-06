@@ -23,7 +23,7 @@ if __name__ == '__main__':
 
 
     # Раскомментировать, если нужно посмотреть информацию в консоли
-    # logging.basicConfig(level=logging.INFO) 
+    logging.basicConfig(level=logging.INFO) 
 
     try:
         asyncio.run(main())

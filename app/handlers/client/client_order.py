@@ -29,40 +29,6 @@ async def order(callback: types.CallbackQuery, state: FSMContext):
        reply_markup = kb.order_canceled
     )
     
-
-@router.message(RedactOldOrder.OrderId)
-async def order_msg(message: types.Message, state: FSMContext):
-    text = message.text
-
-    order = None
-
-    try:
-       order = await order_requests.getOrderById(int(text))
-       if not order:
-          raise ValueError()
-    except ValueError:
-      await message.delete()
-      return
-         
-       
-    await state.update_data(order_id = order.id)
-
-    data = await state.get_data()
-    main_msg = data['main_msg']
-
-
-    text = await aboutOrderText(order)
-
-    await state.set_state(RedactOldOrder.AboutOrder)
-
-    await message.delete()
-    await bot.edit_message_text(
-      chat_id = message.chat.id,
-      message_id = main_msg,
-      text = text,
-      reply_markup = kb.order_canceled
-    )
-    
     
 @router.callback_query(StateFilter(RedactOldOrder), F.data.startswith('page'))
 async def order_page(callback: types.CallbackQuery, state: FSMContext):

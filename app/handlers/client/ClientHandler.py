@@ -31,7 +31,7 @@ async def cancel(callback: types.CallbackQuery, state: FSMContext):
 @router.message(F.text == 'Отмена')
 async def cancel(message: types.Message, state: FSMContext):
     
-    message1 = await message.answer('ОПЕРАЦИЯ ОТМЕНЕНА',
+    await message.answer('ОПЕРАЦИЯ ОТМЕНЕНА',
                               reply_markup = kb.main_reply)
     
     await state.clear()

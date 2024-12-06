@@ -121,6 +121,7 @@ async def async_main():
 
         await conn.run_sync(Base.metadata.create_all)
 
+        # Если нужно сбросить бд, раскомментировать метод ниже.
         # await create_default_db()
 
 
